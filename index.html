@@ -1,0 +1,778 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#17365d">
+<title>My English Learning</title>
+
+<style>
+:root {
+  --navy: #17365d;
+  --blue: #3974b9;
+  --bg: #f4f6fa;
+  --white: #ffffff;
+  --text: #263247;
+  --muted: #78869a;
+  --border: #e5eaf1;
+  --green: #29976b;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Arial, "Microsoft YaHei", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+button, input, textarea, select {
+  font: inherit;
+}
+button { cursor: pointer; }
+.app { min-height: 100vh; }
+.sidebar {
+  position: fixed;
+  left: 0; top: 0; bottom: 0;
+  width: 245px;
+  background: var(--navy);
+  color: white;
+  padding: 25px 17px;
+  overflow-y: auto;
+}
+.logo { font-size: 21px; font-weight: bold; }
+.logo-sub {
+  font-size: 11px;
+  color: #c2d2e7;
+  margin-top: 7px;
+  letter-spacing: 1px;
+}
+.nav-label {
+  color: #9fb3cc;
+  font-size: 11px;
+  margin: 32px 10px 12px;
+  letter-spacing: 1px;
+}
+.nav-btn {
+  width: 100%;
+  border: 0;
+  color: #dce6f3;
+  background: transparent;
+  padding: 13px 12px;
+  text-align: left;
+  border-radius: 9px;
+  margin: 3px 0;
+  font-size: 14px;
+}
+.nav-btn:hover, .nav-btn.active {
+  background: #315580;
+  color: white;
+}
+.main {
+  margin-left: 245px;
+  padding: 30px;
+  max-width: 1500px;
+}
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+  gap: 12px;
+}
+.topbar h2 { margin: 0; font-size: 23px; }
+.topbar p { margin: 6px 0 0; color: var(--muted); font-size: 13px; }
+.lang {
+  border: 1px solid var(--border);
+  background: white;
+  border-radius: 9px;
+  padding: 9px 13px;
+}
+.page { display: none; }
+.page.active { display: block; }
+.welcome {
+  background: linear-gradient(115deg,#17365d,#3974b9);
+  border-radius: 16px;
+  color: white;
+  padding: 30px;
+  margin-bottom: 22px;
+}
+.welcome h1 { margin: 0 0 10px; font-size: 27px; }
+.welcome p { color: #dce8f7; margin: 0; line-height: 1.7; }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4,minmax(0,1fr));
+  gap: 15px;
+}
+.card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  padding: 19px;
+  margin-bottom: 17px;
+}
+.stat-title { color: var(--muted); font-size: 13px; }
+.stat-number { font-size: 29px; font-weight: bold; margin: 13px 0 6px; }
+.stat-note { color: var(--muted); font-size: 12px; }
+.section-title {
+  font-size: 18px;
+  margin: 25px 0 15px;
+}
+.module-icon { font-size: 24px; margin-bottom: 12px; }
+.module-card { cursor: pointer; transition: .2s; }
+.module-card:hover { transform: translateY(-3px); }
+.module-card h3 { margin: 0 0 8px; font-size: 16px; }
+.module-card p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.6; }
+label {
+  display: block;
+  font-size: 13px;
+  font-weight: bold;
+  margin: 15px 0 7px;
+}
+input, textarea, select {
+  width: 100%;
+  border: 1px solid var(--border);
+  padding: 12px;
+  border-radius: 8px;
+  background: white;
+  color: var(--text);
+}
+textarea { min-height: 125px; resize: vertical; }
+.btn {
+  border: 0;
+  border-radius: 8px;
+  background: var(--blue);
+  color: white;
+  padding: 12px 18px;
+  margin-top: 13px;
+}
+.btn:hover { opacity: .9; }
+.btn-secondary {
+  background: #edf3fa;
+  color: var(--navy);
+}
+.result {
+  background: #f7f9fc;
+  border-radius: 9px;
+  padding: 15px;
+  margin-top: 15px;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.word {
+  color: var(--blue);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.task {
+  display: flex;
+  gap: 10px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+.task input { width: auto; }
+.progress {
+  background: #e9eef5;
+  height: 9px;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 12px;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--green);
+  width: 0%;
+}
+.muted { color: var(--muted); font-size: 13px; }
+.footer {
+  color: var(--muted);
+  text-align: center;
+  font-size: 12px;
+  padding: 25px 0;
+}
+.mobile-menu { display: none; }
+
+@media(max-width:1050px) {
+  .grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+}
+@media(max-width:700px) {
+  .sidebar {
+    display: none;
+    z-index: 10;
+    width: 260px;
+  }
+  .sidebar.open { display: block; }
+  .main { margin-left: 0; padding: 17px; }
+  .mobile-menu { display: block; }
+  .topbar h2 { font-size: 18px; }
+  .welcome { padding: 22px; }
+  .welcome h1 { font-size: 23px; }
+  .grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; }
+  .card { padding: 14px; }
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<aside class="sidebar" id="sidebar">
+  <div class="logo">My English Learning</div>
+  <div class="logo-sub">PERSONAL LEARNING PLATFORM</div>
+
+  <div class="nav-label">MAIN MENU / 主菜单</div>
+  <button class="nav-btn active" onclick="showPage('dashboard',this)">⌂ Dashboard / 学习首页</button>
+  <button class="nav-btn" onclick="showPage('vocabulary',this)">▤ Vocabulary / 单词中心</button>
+  <button class="nav-btn" onclick="showPage('reading',this)">▣ Reading / 阅读精读</button>
+  <button class="nav-btn" onclick="showPage('writing',this)">✎ Writing / 写作训练</button>
+  <button class="nav-btn" onclick="showPage('grammar',this)">◇ Grammar / 语法课堂</button>
+  <button class="nav-btn" onclick="showPage('statistics',this)">▥ Statistics / 学习报告</button>
+
+  <div class="nav-label">TOOLS / 工具</div>
+  <button class="nav-btn" onclick="showPage('dictionary',this)">⌕ Dictionary / 词典</button>
+  <button class="nav-btn" onclick="showPage('review',this)">↻ Review / 复习中心</button>
+</aside>
+
+<main class="main">
+  <header class="topbar">
+    <div style="display:flex;gap:12px;align-items:center">
+      <button class="lang mobile-menu" onclick="toggleMenu()">☰</button>
+      <div>
+        <h2 id="pageTitle">Dashboard / 学习首页</h2>
+        <p>Personal English Learning Center / 个人英语学习中心</p>
+      </div>
+    </div>
+    <button class="lang" onclick="toggleLanguage()">中 / EN</button>
+  </header>
+
+  <!-- DASHBOARD -->
+  <section class="page active" id="dashboard">
+    <div class="welcome">
+      <h1>Welcome to Your Learning Space</h1>
+      <p>欢迎来到你的英语学习中心。每天积累一点，让英语能力持续进步。</p>
+    </div>
+
+    <h3 class="section-title">Learning Overview / 学习概览</h3>
+    <div class="grid">
+      <div class="card">
+        <div class="stat-title">Vocabulary / 单词</div>
+        <div class="stat-number" id="wordCount">0</div>
+        <div class="stat-note">Words saved / 已保存单词</div>
+      </div>
+      <div class="card">
+        <div class="stat-title">Reading / 阅读</div>
+        <div class="stat-number" id="articleCount">0</div>
+        <div class="stat-note">Articles saved / 已保存文章</div>
+      </div>
+      <div class="card">
+        <div class="stat-title">Writing / 写作</div>
+        <div class="stat-number" id="essayCount">0</div>
+        <div class="stat-note">Essays saved / 已保存作文</div>
+      </div>
+      <div class="card">
+        <div class="stat-title">Grammar / 语法</div>
+        <div class="stat-number" id="grammarCount">0</div>
+        <div class="stat-note">Practice sessions / 练习次数</div>
+      </div>
+    </div>
+
+    <h3 class="section-title">Daily Goals / 今日任务</h3>
+    <div class="card">
+      <div id="tasks"></div>
+      <div class="progress"><div class="progress-fill" id="taskProgress"></div></div>
+      <p class="muted" id="taskText">0 / 5 completed</p>
+    </div>
+
+    <h3 class="section-title">Learning Modules / 学习模块</h3>
+    <div class="grid">
+      <div class="card module-card" onclick="go('vocabulary')">
+        <div class="module-icon">📚</div>
+        <h3>Vocabulary / 单词</h3>
+        <p>学习、收藏和复习英语词汇。</p>
+      </div>
+      <div class="card module-card" onclick="go('reading')">
+        <div class="module-icon">📖</div>
+        <h3>Reading / 阅读</h3>
+        <p>生成文章、精读和理解练习。</p>
+      </div>
+      <div class="card module-card" onclick="go('writing')">
+        <div class="module-icon">✍️</div>
+        <h3>Writing / 写作</h3>
+        <p>作文评分、语法修改和表达提升。</p>
+      </div>
+      <div class="card module-card" onclick="go('grammar')">
+        <div class="module-icon">🧠</div>
+        <h3>Grammar / 语法</h3>
+        <p>语法讲解、例句和专项练习。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- VOCABULARY -->
+  <section class="page" id="vocabulary">
+    <div class="card">
+      <h3>Vocabulary Center / 单词中心</h3>
+      <p class="muted">添加你想学习的单词。支持多个单词，每行一个。</p>
+      <textarea id="newWords" placeholder="例如：significant&#10;opportunity&#10;environment"></textarea>
+      <button class="btn" onclick="addWords()">Add Words / 添加单词</button>
+    </div>
+    <div class="card">
+      <h3>My Vocabulary / 我的单词库</h3>
+      <input id="wordSearch" placeholder="搜索单词 / Search words" oninput="renderWords()">
+      <div id="wordList"></div>
+    </div>
+  </section>
+
+  <!-- READING -->
+  <section class="page" id="reading">
+    <div class="card">
+      <h3>AI Article Generator / AI 文章生成器</h3>
+      <p class="muted">输入想学习的单词，AI 会尝试将它们自然地放入文章中。</p>
+      <label>Vocabulary / 指定单词</label>
+      <textarea id="articleWords" placeholder="输入单词，用逗号或换行分隔"></textarea>
+      <label>English Level / 英语难度</label>
+      <select id="level">
+        <option value="A2">A2 - Elementary / 初级</option>
+        <option value="B1" selected>B1 - Intermediate / 中级</option>
+        <option value="B2">B2 - Upper Intermediate / 中高级</option>
+        <option value="C1">C1 - Advanced / 高级</option>
+      </select>
+      <label>Topic / 文章主题</label>
+      <select id="topic">
+        <option>School Life / 校园生活</option>
+        <option>Technology / 科技</option>
+        <option>Business / 商业</option>
+        <option>Society / 社会</option>
+        <option>Culture / 文化</option>
+        <option>Daily Life / 日常生活</option>
+      </select>
+      <label>Length / 文章长度</label>
+      <select id="length">
+        <option value="150">150 words / 约150词</option>
+        <option value="250">250 words / 约250词</option>
+        <option value="400">400 words / 约400词</option>
+      </select>
+      <button class="btn" onclick="generateArticle()">Generate Article / 生成文章</button>
+      <div class="result" id="articleResult">文章会显示在这里。</div>
+      <button class="btn btn-secondary" onclick="saveArticle()">Save Article / 保存文章</button>
+    </div>
+    <div class="card">
+      <h3>My Reading Archive / 我的阅读记录</h3>
+      <div id="articleArchive"></div>
+    </div>
+  </section>
+
+  <!-- WRITING -->
+  <section class="page" id="writing">
+    <div class="card">
+      <h3>AI Essay Grader / AI 作文批改</h3>
+      <p class="muted">粘贴作文，AI 会分析语法、词汇、结构和内容。</p>
+      <label>Writing Type / 写作类型</label>
+      <select id="writingType">
+        <option>General English / 普通英语</option>
+        <option>IGCSE Writing</option>
+        <option>IELTS Writing</option>
+        <option>School Essay / 学校作文</option>
+      </select>
+      <label>Your Essay / 你的作文</label>
+      <textarea id="essay" placeholder="Paste your English essay here..."></textarea>
+      <button class="btn" onclick="gradeEssay()">Grade My Essay / 批改作文</button>
+      <div class="result" id="essayResult">批改结果会显示在这里。</div>
+    </div>
+    <div class="card">
+      <h3>Writing Archive / 作文记录</h3>
+      <div id="essayArchive"></div>
+    </div>
+  </section>
+
+  <!-- GRAMMAR -->
+  <section class="page" id="grammar">
+    <div class="card">
+      <h3>Grammar Classroom / 语法课堂</h3>
+      <p class="muted">输入不理解的语法问题，AI 将用中文讲解，并给出英文例句。</p>
+      <label>Grammar Topic / 语法主题</label>
+      <select id="grammarTopic">
+        <option>English Tenses / 英语时态</option>
+        <option>Present Perfect / 现在完成时</option>
+        <option>Past Perfect / 过去完成时</option>
+        <option>Passive Voice / 被动语态</option>
+        <option>Conditional Sentences / 条件句</option>
+        <option>Relative Clauses / 定语从句</option>
+        <option>Reported Speech / 间接引语</option>
+        <option>Gerunds and Infinitives / 动名词与不定式</option>
+        <option>Other / 其他</option>
+      </select>
+      <label>Your Question / 你的问题</label>
+      <textarea id="grammarQuestion" placeholder="例如：为什么这里用 had done，而不是 have done？"></textarea>
+      <button class="btn" onclick="explainGrammar()">Explain Grammar / 讲解语法</button>
+      <div class="result" id="grammarResult">语法讲解会显示在这里。</div>
+    </div>
+  </section>
+
+  <!-- STATISTICS -->
+  <section class="page" id="statistics">
+    <div class="card">
+      <h3>Learning Statistics / 学习统计</h3>
+      <p class="muted">以下数据来自当前浏览器保存的学习记录。</p>
+      <div class="grid">
+        <div>
+          <div class="stat-title">Vocabulary / 单词</div>
+          <div class="stat-number" id="sWords">0</div>
+        </div>
+        <div>
+          <div class="stat-title">Articles / 文章</div>
+          <div class="stat-number" id="sArticles">0</div>
+        </div>
+        <div>
+          <div class="stat-title">Essays / 作文</div>
+          <div class="stat-number" id="sEssays">0</div>
+        </div>
+        <div>
+          <div class="stat-title">Grammar / 语法</div>
+          <div class="stat-number" id="sGrammar">0</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Study Summary / 学习总结</h3>
+      <p id="summaryText">开始学习后，这里会显示你的学习记录。</p>
+      <button class="btn btn-secondary" onclick="exportData()">Export Data / 导出学习数据</button>
+    </div>
+  </section>
+
+  <!-- DICTIONARY -->
+  <section class="page" id="dictionary">
+    <div class="card">
+      <h3>Dictionary / 英语词典</h3>
+      <p class="muted">输入英文单词，查询英文释义和例句。</p>
+      <input id="lookupWord" placeholder="Enter an English word">
+      <button class="btn" onclick="lookupWord()">Search / 查询</button>
+      <div class="result" id="dictionaryResult">查询结果会显示在这里。</div>
+    </div>
+  </section>
+
+  <!-- REVIEW -->
+  <section class="page" id="review">
+    <div class="card">
+      <h3>Review Center / 复习中心</h3>
+      <p class="muted">查看已保存的词汇，点击单词即可查询。</p>
+      <div id="reviewList"></div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    My English Learning · Personal Study Platform
+  </footer>
+</main>
+</div>
+
+<script>
+// 后续部署 Cloudflare Worker 后，替换为真实地址。
+const WORKER_URL = "https://YOUR-WORKER-NAME.YOUR-SUBDOMAIN.workers.dev";
+
+const getData = (key, fallback=[]) => {
+  try { return JSON.parse(localStorage.getItem(key)) || fallback; }
+  catch { return fallback; }
+};
+const setData = (key, value) => {
+  localStorage.setItem(key, JSON.stringify(value));
+};
+
+let words = getData("mel_words");
+let articles = getData("mel_articles");
+let essays = getData("mel_essays");
+let grammarSessions = getData("mel_grammar");
+let taskState = getData("mel_tasks", [false,false,false,false,false]);
+let currentArticle = "";
+
+const taskNames = [
+  "Learn 20 new words / 学习20个新单词",
+  "Review vocabulary / 复习旧单词",
+  "Read an English article / 阅读一篇文章",
+  "Practise grammar / 练习语法",
+  "Write an English paragraph / 写一段英语"
+];
+
+function showPage(id, button) {
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+  if (button) button.classList.add("active");
+  const names = {
+    dashboard:"Dashboard / 学习首页",
+    vocabulary:"Vocabulary / 单词中心",
+    reading:"Reading / 阅读精读",
+    writing:"Writing / 写作训练",
+    grammar:"Grammar / 语法课堂",
+    statistics:"Statistics / 学习报告",
+    dictionary:"Dictionary / 词典",
+    review:"Review / 复习中心"
+  };
+  document.getElementById("pageTitle").textContent = names[id];
+  document.getElementById("sidebar").classList.remove("open");
+  refresh();
+}
+
+function go(id) {
+  const btn = [...document.querySelectorAll(".nav-btn")]
+    .find(b => b.getAttribute("onclick").includes("'" + id + "'"));
+  showPage(id, btn);
+}
+
+function toggleMenu() {
+  document.getElementById("sidebar").classList.toggle("open");
+}
+
+function toggleLanguage() {
+  alert("Bilingual mode / 中英双语模式已启用。更多语言设置将在后续版本加入。");
+}
+
+function renderTasks() {
+  const container = document.getElementById("tasks");
+  container.innerHTML = "";
+  taskNames.forEach((name,i) => {
+    const row = document.createElement("label");
+    row.className = "task";
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = !!taskState[i];
+    checkbox.onchange = () => {
+      taskState[i] = checkbox.checked;
+      setData("mel_tasks",taskState);
+      renderTasks();
+    };
+    const span = document.createElement("span");
+    span.textContent = name;
+    row.append(checkbox,span);
+    container.appendChild(row);
+  });
+  const done = taskState.filter(Boolean).length;
+  document.getElementById("taskProgress").style.width = (done/5*100) + "%";
+  document.getElementById("taskText").textContent = done + " / 5 completed / 已完成";
+}
+
+function addWords() {
+  const input = document.getElementById("newWords").value.trim();
+  if (!input) return alert("请先输入单词。");
+  const list = input.split(/[\n,，;；]+/).map(w=>w.trim().toLowerCase()).filter(Boolean);
+  let added = 0;
+  list.forEach(w=>{
+    if (!words.some(x=>x.word===w)) {
+      words.push({word:w, date:new Date().toISOString(), mastered:false});
+      added++;
+    }
+  });
+  setData("mel_words",words);
+  document.getElementById("newWords").value = "";
+  renderWords();
+  refresh();
+  alert("已添加 " + added + " 个新单词。");
+}
+
+function renderWords() {
+  const query = (document.getElementById("wordSearch")?.value || "").toLowerCase();
+  const container = document.getElementById("wordList");
+  container.innerHTML = "";
+  words.filter(x=>x.word.includes(query)).forEach(item=>{
+    const row = document.createElement("div");
+    row.className = "task";
+    const name = document.createElement("span");
+    name.textContent = item.word;
+    name.style.flex = "1";
+    name.style.cursor = "pointer";
+    name.onclick = ()=> {
+      document.getElementById("lookupWord").value = item.word;
+      go("dictionary");
+      lookupWord();
+    };
+    const status = document.createElement("span");
+    status.textContent = item.mastered ? "已掌握" : "待复习";
+    const done = document.createElement("button");
+    done.className = "btn btn-secondary";
+    done.style.margin = "0";
+    done.textContent = item.mastered ? "取消掌握" : "已掌握";
+    done.onclick = ()=>{
+      item.mastered = !item.mastered;
+      setData("mel_words",words);
+      renderWords(); refresh();
+    };
+    row.append(name,status,done);
+    container.appendChild(row);
+  });
+  if (!container.children.length) container.textContent = "暂无单词，请先添加。";
+}
+
+async function askAI(path, data) {
+  if (WORKER_URL.includes("YOUR-WORKER-NAME")) {
+    throw new Error("AI 服务尚未连接。请先部署 Cloudflare Worker，并设置正确的 Worker 地址。");
+  }
+  const response = await fetch(WORKER_URL + path,{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify(data)
+  });
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.error || "AI request failed");
+  return result;
+}
+
+async function generateArticle() {
+  const input = document.getElementById("articleWords").value.trim();
+  const level = document.getElementById("level").value;
+  const topic = document.getElementById("topic").value;
+  const length = document.getElementById("length").value;
+  const output = document.getElementById("articleResult");
+  if (!input) return alert("请先输入想学习的单词。");
+  output.textContent = "AI 正在生成文章，请稍候……";
+  try {
+    const result = await askAI("/generate",{words:input,level,topic,length});
+    currentArticle = result.text || result.article || "";
+    renderClickableArticle(currentArticle,output);
+  } catch(e) { output.textContent = e.message; }
+}
+
+function renderClickableArticle(text,output) {
+  output.innerHTML = "";
+  text.split(/(\b[a-zA-Z'-]+\b)/g).forEach(part=>{
+    if (/^[a-zA-Z'-]+$/.test(part)) {
+      const span = document.createElement("span");
+      span.className = "word";
+      span.textContent = part;
+      span.onclick = ()=>{
+        document.getElementById("lookupWord").value = part;
+        go("dictionary");
+        lookupWord();
+      };
+      output.appendChild(span);
+    } else output.appendChild(document.createTextNode(part));
+  });
+}
+
+function saveArticle() {
+  if (!currentArticle.trim()) return alert("目前没有可保存的文章。");
+  articles.unshift({text:currentArticle,date:new Date().toLocaleString()});
+  setData("mel_articles",articles);
+  refresh();
+  alert("文章已保存。");
+}
+
+async function gradeEssay() {
+  const essay = document.getElementById("essay").value.trim();
+  const type = document.getElementById("writingType").value;
+  const output = document.getElementById("essayResult");
+  if (!essay) return alert("请先输入作文。");
+  output.textContent = "AI 正在批改作文，请稍候……";
+  try {
+    const result = await askAI("/",{essay,type});
+    const feedback = result.feedback || result.text || JSON.stringify(result,null,2);
+    output.textContent = feedback;
+    essays.unshift({essay,feedback,date:new Date().toLocaleString()});
+    setData("mel_essays",essays);
+    refresh();
+  } catch(e) { output.textContent = e.message; }
+}
+
+async function explainGrammar() {
+  const topic = document.getElementById("grammarTopic").value;
+  const question = document.getElementById("grammarQuestion").value.trim();
+  const output = document.getElementById("grammarResult");
+  if (!question) return alert("请先输入你的语法问题。");
+  output.textContent = "AI 正在准备语法讲解……";
+  try {
+    const result = await askAI("/grammar",{topic,question});
+    output.textContent = result.text || result.feedback || JSON.stringify(result,null,2);
+    grammarSessions.push({topic,question,date:new Date().toLocaleString()});
+    setData("mel_grammar",grammarSessions);
+    refresh();
+  } catch(e) { output.textContent = e.message; }
+}
+
+async function lookupWord() {
+  const word = document.getElementById("lookupWord").value.trim();
+  const output = document.getElementById("dictionaryResult");
+  if (!word) return alert("请输入英文单词。");
+  output.textContent = "正在查询……";
+  try {
+    const response = await fetch("https://api.dictionaryapi.dev/api/v2/entries/en/" + encodeURIComponent(word));
+    if (!response.ok) throw new Error("没有找到这个单词。");
+    const data = await response.json();
+    const entry = data[0];
+    let lines = [];
+    if (entry.phonetic) lines.push("Pronunciation / 音标: " + entry.phonetic);
+    entry.meanings.forEach(m=>{
+      lines.push("\n" + m.partOfSpeech);
+      m.definitions.slice(0,3).forEach(d=>{
+        lines.push("• " + d.definition);
+        if (d.example) lines.push("Example: " + d.example);
+      });
+    });
+    output.textContent = lines.join("\n");
+  } catch(e) { output.textContent = e.message; }
+}
+
+function renderArchives() {
+  const a = document.getElementById("articleArchive");
+  a.innerHTML = "";
+  articles.slice(0,10).forEach((item,i)=>{
+    const div = document.createElement("div");
+    div.className = "result";
+    div.textContent = "Article " + (i+1) + " · " + item.date + "\n" + item.text.slice(0,220) + "...";
+    a.appendChild(div);
+  });
+  if (!articles.length) a.textContent = "还没有保存的文章。";
+
+  const e = document.getElementById("essayArchive");
+  e.innerHTML = "";
+  essays.slice(0,10).forEach((item,i)=>{
+    const div = document.createElement("div");
+    div.className = "result";
+    div.textContent = "Essay " + (i+1) + " · " + item.date + "\n" + item.essay.slice(0,150);
+    e.appendChild(div);
+  });
+  if (!essays.length) e.textContent = "还没有作文记录。";
+
+  const r = document.getElementById("reviewList");
+  r.innerHTML = "";
+  words.filter(x=>!x.mastered).forEach(x=>{
+    const p = document.createElement("p");
+    p.className = "task";
+    p.textContent = x.word;
+    r.appendChild(p);
+  });
+  if (!r.children.length) r.textContent = "目前没有待复习单词。";
+}
+
+function refresh() {
+  document.getElementById("wordCount").textContent = words.length;
+  document.getElementById("articleCount").textContent = articles.length;
+  document.getElementById("essayCount").textContent = essays.length;
+  document.getElementById("grammarCount").textContent = grammarSessions.length;
+  document.getElementById("sWords").textContent = words.length;
+  document.getElementById("sArticles").textContent = articles.length;
+  document.getElementById("sEssays").textContent = essays.length;
+  document.getElementById("sGrammar").textContent = grammarSessions.length;
+  document.getElementById("summaryText").textContent =
+    "你已保存 " + words.length + " 个单词、" +
+    articles.length + " 篇文章、" + essays.length +
+    " 篇作文，并进行了 " + grammarSessions.length + " 次语法学习。";
+  renderWords();
+  renderArchives();
+}
+
+function exportData() {
+  const data = {words,articles,essays,grammarSessions,taskState};
+  const blob = new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "my-english-learning-data.json";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+renderTasks();
+refresh();
+</script>
+</body>
+</html>
